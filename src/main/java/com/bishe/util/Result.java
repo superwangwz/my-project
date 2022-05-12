@@ -1,5 +1,6 @@
 package com.bishe.util;
 
+import cn.hutool.crypto.SmUtil;
 import cn.hutool.json.JSONUtil;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -196,4 +197,9 @@ public class Result<T> implements Serializable {
         return other instanceof Result;
     }
 
+    public static void main(String[] args) {
+        //结果为：136ce3c86e4ed909b76082055a61586af20b4dab674732ebd4b599eef080c9be
+        String digestHex = SmUtil.sm3("aaaaa");
+        System.out.println("digestHex = " + digestHex);
+    }
 }

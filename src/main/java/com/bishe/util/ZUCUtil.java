@@ -3,7 +3,7 @@ package com.bishe.util;
 /**
  * zuc加密工具
  */
-public class ZUC128Util {
+public class ZUCUtil {
     //线性反馈移位寄存器
     int[] LFSR = new int[16];
     //比特重组输出的4个32比特字
@@ -95,7 +95,7 @@ public class ZUC128Util {
      * @param k  16字节密钥
      * @param iv 16字节初始向量
      */
-    public ZUC128Util(int[] k, int[] iv) {
+    public ZUCUtil(int[] k, int[] iv) {
         init(k, iv);
     }
 
@@ -203,7 +203,7 @@ public class ZUC128Util {
 
     //加密方法
     public static String encrypt(String input){
-        ZUC128Util zuc = new ZUC128Util(k, iv);
+        ZUCUtil zuc = new ZUCUtil(k, iv);
         int length = input.length();
         long[] key_stream = new long[length];
         for (int i = 0; i < length; i++) {
@@ -222,7 +222,7 @@ public class ZUC128Util {
     //解密方法
     public static String encryption(String result){
         String[] split = result.split(",");
-        ZUC128Util zuc = new ZUC128Util(k, iv);
+        ZUCUtil zuc = new ZUCUtil(k, iv);
         int length = split.length;
         long[] key_stream = new long[length];
         for (int i = 0; i < length; i++) {

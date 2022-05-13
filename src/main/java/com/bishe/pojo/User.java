@@ -12,7 +12,7 @@ import java.io.Serializable;
 
 @Data
 @ApiModel("文件")
-@TableName("file")
+@TableName("user")
 @EqualsAndHashCode(callSuper = false)
 public class User implements Serializable {
 

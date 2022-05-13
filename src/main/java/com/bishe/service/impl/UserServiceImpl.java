@@ -1,6 +1,7 @@
 package com.bishe.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -51,6 +52,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         String passWord = user.getPassWord();
         //加密为hash
         String hash = ToHash.changeHash(passWord);
+        user.setId(UUID.randomUUID().toString());
         user.setPassWord(hash);
         save(user);
     }

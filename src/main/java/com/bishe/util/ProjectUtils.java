@@ -10,7 +10,6 @@ import cn.hutool.core.util.StrUtil;
 
 import com.bishe.config.EcoBootException;
 import com.bishe.pojo.FileInfo;
-import com.bishe.pojo.LoginModel;
 import com.bishe.service.IFileService;
 import lombok.SneakyThrows;
 import org.springframework.context.ApplicationContext;
@@ -83,34 +82,8 @@ public class ProjectUtils {
         //返回验证码code
         return imgCode.getCode();
     }
-    /**
-     * 登录效验
-     */
-    public static void checkLoginModel(LoginModel loginModel){
 
-        if(loginModel ==null){
-            throw new EcoBootException("登录失败!");
-        }
 
-        //验证 验证码
-        checkImgCode(loginModel.getTxt());
-
-        if (StrUtil.isEmpty(loginModel.getUserName())||StrUtil.isEmpty(loginModel.getPassword())){
-            throw new EcoBootException("用户名密码为空!");
-        }
-    }
-
-    /**
-     * 登录效验
-     */
-    public static void checkImgCode(String txt){
-        //获取验证码
-        String code = ProjectUtils.getImgCode();
-
-        if (!code.equalsIgnoreCase(txt)){
-            throw new EcoBootException("验证码错误!");
-        }
-    }
 
     /**
      * 检查登录

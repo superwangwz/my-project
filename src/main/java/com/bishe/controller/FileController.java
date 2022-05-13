@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.List;
@@ -23,14 +24,9 @@ import java.util.List;
 @Api(tags = "文件控制器")
 public class FileController {
 
-    @Autowired
+    @Resource
     private IFileService fileService;
 
-    @ApiOperation("生成验证码")
-    @GetMapping("/getImg")
-    public void getImg(HttpServletResponse response){
-        ProjectUtils.createImgCode(response);
-    }
 
     @ApiOperation("上传文件")
     @PostMapping("/upload")

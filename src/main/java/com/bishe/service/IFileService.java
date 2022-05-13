@@ -15,7 +15,7 @@ public interface IFileService extends IService<FileInfo> {
 
     List<FileInfo> getByDataId(String dataId);
 
-    void upload(MultipartFile file, String dataId);
+    void upload(MultipartFile file, String dataId,String type);
 
     void deleteFile(String fileId);
 }

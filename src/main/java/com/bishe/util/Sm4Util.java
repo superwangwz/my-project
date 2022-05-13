@@ -52,15 +52,22 @@ public class Sm4Util {
      * @return
      * @throws Exception
      */
-    public static byte[] encrypt(String algorithmName, byte[] key, byte[] iv, byte[] data) throws Exception {
-        return sm4core(algorithmName, Cipher.ENCRYPT_MODE, key, iv, data);
+    public static byte[] encrypt(byte[] data) throws Exception {
+        byte[] key = Sm4Util.generateKey();
+
+        byte[] iv = "1234567890123456".getBytes(StandardCharsets.UTF_8);
+        String s = "SM4";
+        return sm4core(s, Cipher.ENCRYPT_MODE, key, iv, data);
     }
 
     /**
      * @description 解密
      */
-    public static byte[] decrypt(String algorithmName, byte[] key, byte[] iv, byte[] data) throws Exception {
-        return sm4core(algorithmName, Cipher.DECRYPT_MODE, key, iv, data);
+    public static byte[] decrypt(byte[] data) throws Exception {
+        byte[] key = Sm4Util.generateKey();
+        byte[] iv = "1234567890123456".getBytes(StandardCharsets.UTF_8);
+        String s = "SM4";
+        return sm4core(s, Cipher.DECRYPT_MODE, key, iv, data);
     }
 
     private static byte[] sm4core(String algorithmName, int type, byte[] key, byte[] iv, byte[] data) throws Exception {
@@ -77,15 +84,8 @@ public class Sm4Util {
 
     public static void main(String[] args) throws Exception {
 
-        byte[] key = Sm4Util.generateKey();
-
-        byte[] iv = "1234567890123456".getBytes(StandardCharsets.UTF_8);
-
         String text = "wwz";
-
-        String s = "SM4";
-
-        byte[] encrypt = encrypt(s, key, iv, text.getBytes());
+        byte[] encrypt = encrypt(text.getBytes());
         System.out.println("encrypt = " + encrypt);
     }
 }

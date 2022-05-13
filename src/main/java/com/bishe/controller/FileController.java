@@ -1,17 +1,17 @@
 package com.bishe.controller;
+
 import com.bishe.pojo.FileInfo;
 import com.bishe.service.IFileService;
 import com.bishe.util.ProjectUtils;
 import com.bishe.util.Result;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -30,18 +30,25 @@ public class FileController {
 
     @ApiOperation("上传文件")
     @PostMapping("/upload")
-    public Result upload(MultipartFile file,String dataId){
-        fileService.upload(file,dataId);
+    public Result upload(MultipartFile file,String dataId,String type){
+        fileService.upload(file,dataId,type);
         return Result.ok("上传成功!");
     }
 
 
     @ApiOperation("下载文件")
-    @GetMapping("/download/{fileId}")
-    public Result download(@PathVariable String fileId, HttpServletResponse response){
+    @PostMapping("/download")
+    public Result download(String fileId, HttpServletResponse response,String type){
         File file = ProjectUtils.getFile(fileId);
-        //下载文件
-        ProjectUtils.download(response,file);
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            //下载文件
+            ProjectUtils.download(response,fileInputStream,file.getName(),type);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         return Result.ok();
     }
 

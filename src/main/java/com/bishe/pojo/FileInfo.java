@@ -31,6 +31,8 @@ public class FileInfo implements Serializable {
     @ApiModelProperty("业务id")
     private String dataId;
 
+    @ApiModelProperty("加密类型")
+    private String type;
 
     @ApiModelProperty("文件名")
     private String name;

@@ -6,8 +6,8 @@ import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.StrUtil;
-
+import cn.hutool.crypto.SmUtil;
+import cn.hutool.crypto.asymmetric.KeyType;
 import com.bishe.config.EcoBootException;
 import com.bishe.pojo.FileInfo;
 import com.bishe.service.IFileService;
@@ -121,20 +121,21 @@ public class ProjectUtils {
     /**
      * 下载文件
      * @param response
-     * @param file
      */
-    public static  void download(HttpServletResponse response, File file){
+    public static  void download(HttpServletResponse response, FileInputStream fileInputStream,String name,String type){
         try {
-            //获取文件流
-            FileInputStream fileInputStream = new FileInputStream(file);
             //文件大小
             int available = fileInputStream.available();
             //初始化缓存
             byte[] bytes = new byte[available];
+            //加密类型
+            switch (type){
+                case "zuc":bytes = ZUCUtil.encryption(new String(bytes)).getBytes();break;
+                case "sm2":bytes = SmUtil.sm2().decrypt(bytes, KeyType.PublicKey);break;
+                case "sm4": bytes = Sm4Util.decrypt(bytes);break;
+            }
             //写入缓存中
             fileInputStream.read(bytes);
-            //获取文件名
-            String name = file.getName();
             //获取文件真实名字
             String fileName = name.split("_")[1];
             //设置传输文件类型 和文件名
@@ -146,7 +147,7 @@ public class ProjectUtils {
             //关闭流
             outputStream.close();
             fileInputStream.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -158,7 +159,7 @@ public class ProjectUtils {
      * @return
      */
     @SneakyThrows
-    public static String uploadFile(MultipartFile file){
+    public static String uploadFile(MultipartFile file,String type){
         //获取文件名
         String name = file.getOriginalFilename();
         //将所有下划线替换成- 以防影响真实名切割
@@ -196,6 +197,15 @@ public class ProjectUtils {
         System.out.println("path = " + path);
         //获取输入流
         FileOutputStream fileOutputStream= new FileOutputStream(new File(path));
+
+        //字符串文件内容
+        String fileContent = new String(bytes);
+        //加密类型
+        switch (type){
+            case "zuc":bytes = ZUCUtil.encrypt(fileContent).getBytes();break;
+            case "sm2":bytes = SmUtil.sm2().encrypt(bytes);break;
+            case "sm4": bytes = Sm4Util.encrypt(bytes);break;
+        }
         //写
         fileOutputStream.write(bytes);
         //刷新

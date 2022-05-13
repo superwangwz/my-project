@@ -36,7 +36,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileInfo> implement
     }
 
     @Override
-    public void upload(MultipartFile file, String dataId) {
+    public void upload(MultipartFile file, String dataId,String type) {
         if (StrUtil.isEmpty(dataId)){
             throw new EcoBootException("dataId为空！");
         }
@@ -56,11 +56,11 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileInfo> implement
             });
         }
 
-        String fileName = ProjectUtils.uploadFile(file);
+        String fileName = ProjectUtils.uploadFile(file,type);
 
         if (StrUtil.isEmpty(fileName)){
             throw new EcoBootException("格式错误！");
-    }
+        }
         //上传成功则保存文件记录
         FileInfo fileInfo1 = new FileInfo();
         fileInfo1.setId(UUID.randomUUID().toString());
@@ -69,6 +69,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileInfo> implement
         fileInfo1.setCreateTime(new DateTime());
         fileInfo1.setSuffix(FileUtil.getSuffix(fileName));
         fileInfo1.setName(FileUtil.getName(fileName));
+        fileInfo1.setType(type);
         save(fileInfo1);
     }
 

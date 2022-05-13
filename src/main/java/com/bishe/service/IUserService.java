@@ -16,4 +16,11 @@ public interface IUserService extends IService<User> {
      * @return
      */
     User login(User user);
+
+
+    /**
+     * 添加和修改
+     * @param user
+     */
+    void addOrUpdate(User user);
 }

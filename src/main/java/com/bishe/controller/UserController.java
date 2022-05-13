@@ -25,6 +25,16 @@ public class UserController {
     @PostMapping("/login")
     public Result login(@RequestBody User user){
         User login = userService.login(user);
+        if (login == null){
+            return Result.error("用户名密码错误！");
+        }
         return Result.ok(login);
+    }
+
+    @ApiOperation("登录和注册")
+    @PostMapping("/addOrUpdate")
+    public Result addOrUpdate(@RequestBody User user){
+        userService.addOrUpdate(user);
+        return Result.ok();
     }
 }

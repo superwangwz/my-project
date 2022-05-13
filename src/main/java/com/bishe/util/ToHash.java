@@ -3,7 +3,7 @@ package com.bishe.util;
 /**
  * hash util
  */
-public class toHash {
+public class ToHash {
     // 将字符串转成hash值
     public static String changeHash(String key) {
         // 数组大小一般取质数

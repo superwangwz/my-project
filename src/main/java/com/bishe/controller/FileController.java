@@ -1,6 +1,8 @@
 package com.bishe.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.bishe.pojo.FileInfo;
+import com.bishe.pojo.query.FileQuery;
 import com.bishe.service.IFileService;
 import com.bishe.util.ProjectUtils;
 import com.bishe.util.Result;
@@ -62,11 +64,11 @@ public class FileController {
 
 
     @ApiOperation("查询")
-    @GetMapping("/list")
-    public Result list(){
+    @GetMapping("/toPage")
+    public Result list(FileQuery query){
         //检查登录
-        List<FileInfo> list = fileService.list();
-        return Result.ok(list);
+        IPage<FileInfo> iPage = fileService.toPage(query);
+        return Result.ok(iPage);
     }
 
 }

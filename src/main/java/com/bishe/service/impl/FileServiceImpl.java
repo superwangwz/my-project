@@ -6,10 +6,12 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bishe.config.EcoBootException;
 import com.bishe.dao.FileMapper;
 import com.bishe.pojo.FileInfo;
+import com.bishe.pojo.query.FileQuery;
 import com.bishe.service.IFileService;
 import com.bishe.util.ProjectUtils;
 import org.springframework.stereotype.Service;
@@ -68,16 +70,38 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileInfo> implement
         fileInfo1.setCreateBy(ProjectUtils.getLoginId());
         fileInfo1.setCreateTime(new DateTime());
         fileInfo1.setSuffix(FileUtil.getSuffix(fileName));
-        fileInfo1.setName(FileUtil.getName(fileName));
+        fileInfo1.setName(fileName.substring(fileName.indexOf("_")+1,fileName.lastIndexOf(".")));
         fileInfo1.setType(type);
         save(fileInfo1);
     }
 
     @Override
-    public void deleteFile(String fileId) {
-        File file = ProjectUtils.getFile(fileId);
-        //删除文件
-        FileUtil.del(file);
-        removeById(fileId);
+    public void deleteFile(String id) {
+            FileInfo fileInfo = this.getById(id);
+            if (fileInfo == null){
+                return;
+            }
+            String fileName = fileInfo.getName();
+
+            String dirPath = ProjectUtils.getDirPath();
+            //文件的下载路径
+            String filePath = dirPath +File.separator + fileName;
+
+            File file = new File(filePath);
+
+            FileUtil.del(file);
+
+            this.remove(new LambdaQueryWrapper<FileInfo>().eq(FileInfo::getId,id));
+    }
+
+    @Override
+    public IPage<FileInfo> toPage(FileQuery query) {
+        LambdaQueryWrapper<FileInfo> wrapper = new LambdaQueryWrapper<>();
+        if (StrUtil.isNotBlank(query.getName())){
+            wrapper.like(FileInfo::getName,query.getName());
+        }
+        wrapper.orderByDesc(FileInfo::getCreateTime);
+
+        return page(query.toPage(), wrapper);
     }
 }

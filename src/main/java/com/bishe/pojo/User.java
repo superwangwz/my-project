@@ -1,6 +1,7 @@
 package com.bishe.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
@@ -28,4 +29,8 @@ public class User implements Serializable {
 
     @ApiModelProperty("用户名")
     private String passWord;
+
+    @ApiModelProperty("用户名")
+    @TableField(exist = false)
+    private String token;
 }

@@ -36,6 +36,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 return null;
             }
             StpUtil.login(one.getId());
+            one.setToken(StpUtil.getTokenValue());
             return one;
     }
 

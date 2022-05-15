@@ -37,53 +37,6 @@ public class ProjectUtils {
         ProjectUtils.applicationContext = applicationContext;
     }
 
-    /**
-     * 生成验证码
-     * @param response
-     */
-    public static void createImgCode(HttpServletResponse response){
-        SaSession tokenSession = StpUtil.getTokenSession();
-
-        //定义图形验证码的长和宽
-        LineCaptcha lineCaptcha = CaptchaUtil.createLineCaptcha(200, 100);
-
-        //图形验证码写出，可以写出到文件，也可以写出到流
-        try {
-            ServletOutputStream outputStream = response.getOutputStream();
-            lineCaptcha.write(outputStream);
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        tokenSession.set("imgCode",lineCaptcha);
-        //设置一个创建时间
-        tokenSession.setCreateTime(new DateTime().getTime());
-    }
-
-    /**
-     * 获取验证码code
-     * @return
-     */
-    public static String getImgCode(){
-        //获取当前Token Session
-        SaSession tokenSession = StpUtil.getTokenSession();
-        //获取验证码类
-        LineCaptcha imgCode = (LineCaptcha) tokenSession.get("imgCode");
-
-        //获取验证码创建时间
-        long createTime = tokenSession.getCreateTime();
-        //当前时间
-        long now = new DateTime().getTime();
-        //时间大于1分钟
-        if (now-createTime > 5*60*1000||imgCode == null){
-           throw new EcoBootException("验证码过期！");
-        }
-
-        //返回验证码code
-        return imgCode.getCode();
-    }
-
-
 
     /**
      * 检查登录
@@ -112,7 +65,7 @@ public class ProjectUtils {
      * @return
      */
     public static String getDirPath(){
-        File file1 = new File("files");
+        File file1 = new File(".file");
 
         //返回绝对路径
         return file1.getAbsolutePath();
@@ -129,11 +82,11 @@ public class ProjectUtils {
             //初始化缓存
             byte[] bytes = new byte[available];
             //加密类型
-            switch (type){
+          /*  switch (type){
                 case "zuc":bytes = ZUCUtil.encryption(new String(bytes)).getBytes();break;
                 case "sm2":bytes = SmUtil.sm2().decrypt(bytes, KeyType.PublicKey);break;
                 case "sm4": bytes = Sm4Util.decrypt(bytes);break;
-            }
+            }*/
             //写入缓存中
             fileInputStream.read(bytes);
             //获取文件真实名字
@@ -198,14 +151,14 @@ public class ProjectUtils {
         //获取输入流
         FileOutputStream fileOutputStream= new FileOutputStream(new File(path));
 
-        //字符串文件内容
+        /*//字符串文件内容
         String fileContent = new String(bytes);
         //加密类型
         switch (type){
             case "zuc":bytes = ZUCUtil.encrypt(fileContent).getBytes();break;
             case "sm2":bytes = SmUtil.sm2().encrypt(bytes);break;
             case "sm4": bytes = Sm4Util.encrypt(bytes);break;
-        }
+        }*/
         //写
         fileOutputStream.write(bytes);
         //刷新

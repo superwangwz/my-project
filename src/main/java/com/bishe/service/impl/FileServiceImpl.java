@@ -38,7 +38,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileInfo> implement
     }
 
     @Override
-    public void upload(MultipartFile file, String dataId,String type) {
+    public FileInfo upload(MultipartFile file, String dataId,String type) {
         if (StrUtil.isEmpty(dataId)){
             throw new EcoBootException("dataId为空！");
         }
@@ -63,25 +63,26 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileInfo> implement
         if (StrUtil.isEmpty(fileName)){
             throw new EcoBootException("格式错误！");
         }
-        //上传成功则保存文件记录
+        //上传成功则保存文件记录n
         FileInfo fileInfo1 = new FileInfo();
         fileInfo1.setId(UUID.randomUUID().toString());
         fileInfo1.setDataId(dataId);
         fileInfo1.setCreateBy(ProjectUtils.getLoginId());
         fileInfo1.setCreateTime(new DateTime());
         fileInfo1.setSuffix(FileUtil.getSuffix(fileName));
-        fileInfo1.setName(fileName.substring(fileName.indexOf("_")+1,fileName.lastIndexOf(".")));
+        fileInfo1.setName(fileName);
         fileInfo1.setType(type);
         save(fileInfo1);
+        return fileInfo1;
     }
 
     @Override
     public void deleteFile(String id) {
-            FileInfo fileInfo = this.getById(id);
-            if (fileInfo == null){
+        List<FileInfo> byDataId = getByDataId(id);
+            if (CollUtil.isEmpty(byDataId)){
                 return;
             }
-            String fileName = fileInfo.getName();
+            String fileName = byDataId.get(0).getName();
 
             String dirPath = ProjectUtils.getDirPath();
             //文件的下载路径
@@ -91,7 +92,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileInfo> implement
 
             FileUtil.del(file);
 
-            this.remove(new LambdaQueryWrapper<FileInfo>().eq(FileInfo::getId,id));
+            this.remove(new LambdaQueryWrapper<FileInfo>().eq(FileInfo::getDataId,id));
     }
 
     @Override

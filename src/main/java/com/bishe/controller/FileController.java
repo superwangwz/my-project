@@ -1,6 +1,7 @@
 package com.bishe.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.bishe.config.EcoBootException;
 import com.bishe.pojo.FileInfo;
 import com.bishe.pojo.query.FileQuery;
 import com.bishe.service.IFileService;
@@ -33,23 +34,26 @@ public class FileController {
     @ApiOperation("上传文件")
     @PostMapping("/upload")
     public Result upload(MultipartFile file,String dataId,String type){
-        fileService.upload(file,dataId,type);
-        return Result.ok("上传成功!");
+        FileInfo fileInfo = fileService.upload(file, dataId, type);
+        return Result.ok("上传成功!",fileInfo);
     }
 
 
     @ApiOperation("下载文件")
-    @PostMapping("/download")
-    public Result download(String fileId, HttpServletResponse response,String type){
-        File file = ProjectUtils.getFile(fileId);
+    @GetMapping("/download/{fileId}")
+    public Result download(@PathVariable String fileId, HttpServletResponse response){
+        FileInfo fileInfo = fileService.getById(fileId);
+        if (fileInfo == null){
+             new EcoBootException("文件为空！");
+        }
+        File file = ProjectUtils.getFile(fileInfo);
         try {
             FileInputStream fileInputStream = new FileInputStream(file);
             //下载文件
-            ProjectUtils.download(response,fileInputStream,file.getName(),type);
+            ProjectUtils.download(response,fileInputStream,file.getName());
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         return Result.ok();
     }

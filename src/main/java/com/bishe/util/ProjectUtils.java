@@ -15,6 +15,7 @@ import lombok.SneakyThrows;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -36,6 +37,9 @@ public class ProjectUtils {
     public static void setApplicationContext(ApplicationContext applicationContext) {
         ProjectUtils.applicationContext = applicationContext;
     }
+
+    @Resource
+    private IFileService fileService;
 
 
     /**
@@ -75,7 +79,7 @@ public class ProjectUtils {
      * 下载文件
      * @param response
      */
-    public static  void download(HttpServletResponse response, FileInputStream fileInputStream,String name,String type){
+    public static  void download(HttpServletResponse response, FileInputStream fileInputStream,String name){
         try {
             //文件大小
             int available = fileInputStream.available();
@@ -171,25 +175,17 @@ public class ProjectUtils {
 
     /**
      * 获取文件
-     * @param fileId
      * @return
      */
-    public static File getFile(String fileId){
-        IFileService fileService = getApplicationContext().getBean(IFileService.class);
+    public static File getFile(FileInfo fileInfo){
 
-        // 文件id为空
-        if (fileId == null){
-            throw new EcoBootException("fileId 为空！");
-        }
-        //根据id查找文件信息
-        FileInfo byId = fileService.getById(fileId);
         // 文件信息为空直接返回
-        if (byId == null){
+        if (fileInfo == null){
             throw new EcoBootException("没有该文件！");
         }
 
         //获取文件名
-        String name = byId.getName();
+        String name = fileInfo.getName();
         //获取存储文件的目录
         String dirPath = ProjectUtils.getDirPath();
         //文件的下载路径

@@ -1,14 +1,19 @@
 server:
-  port: 8080
+  port: 8081
 spring:
   application:
     name: job
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     name: defaultDataSource
-    url: jdbc:mysql://106.55.198.193:3306/pass?serverTimezone=UTC
+    url: jdbc:mysql://localhost/pass?serverTimezone=UTC
     username: root
-    password: 123456
+    password: root
+
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
 
 # Sa-Token ??
 sa-token:

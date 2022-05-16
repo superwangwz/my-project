@@ -21,8 +21,8 @@
         <!--国密-->
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.56</version>
+            <artifactId>bcprov-jdk15to18</artifactId>
+            <version>1.69</version>
         </dependency>
 
         <dependency>

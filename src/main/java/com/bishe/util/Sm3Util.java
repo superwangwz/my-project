@@ -1,6 +1,5 @@
 package com.bishe.util;
 
-
 import org.bouncycastle.crypto.digests.SM3Digest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
@@ -79,5 +78,11 @@ public class Sm3Util {
             e.printStackTrace();
         }
         return flag;
+    }
+
+    public static void main(String[] args) {
+        String s = "www";
+        String encrypt = encrypt(s);
+        System.out.println("encrypt = " + encrypt);
     }
 }

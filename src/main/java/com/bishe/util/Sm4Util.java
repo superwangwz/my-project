@@ -44,11 +44,8 @@ public class Sm4Util {
     }
 
     /**
-     *
-     * @param algorithmName 加密算法
-     * @param key SM4加密key
-     * @param iv SM4加密iv
-     * @param data // 加密数据
+     * 加密
+     * @param data
      * @return
      * @throws Exception
      */
@@ -70,6 +67,15 @@ public class Sm4Util {
         return sm4core(s, Cipher.DECRYPT_MODE, key, iv, data);
     }
 
+    /**
+     *
+     * @param algorithmName 加密算法
+     * @param key SM4加密key
+     * @param iv SM4加密iv
+     * @param data // 加密数据
+     * @return
+     * @throws Exception
+     */
     private static byte[] sm4core(String algorithmName, int type, byte[] key, byte[] iv, byte[] data) throws Exception {
         Cipher cipher = Cipher.getInstance(algorithmName, BouncyCastleProvider.PROVIDER_NAME);
         Key sm4Key = new SecretKeySpec(key, ALGORITHM_NAME);
@@ -87,5 +93,8 @@ public class Sm4Util {
         String text = "wwz";
         byte[] encrypt = encrypt(text.getBytes());
         System.out.println("encrypt = " + encrypt);
+
+        byte[] decrypt = decrypt(encrypt);
+        System.out.println("decrypt = " + decrypt);
     }
 }

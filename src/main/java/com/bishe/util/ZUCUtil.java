@@ -61,8 +61,9 @@ public class ZUCUtil {
      */
     private void init(int[] k, int[] iv) {
         //密钥装入
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < 16; i++) {
             LFSR[i] = (k[i] << 23) | (d[i] << 8) | iv[i];
+        }
         r1 = 0;
         r2 = 0;
         long w;
@@ -107,10 +108,10 @@ public class ZUCUtil {
     private void LFSRWithInitialisationMode(int u) {
         int v = (int) ((((long) LFSR[15] << 15) + ((long) LFSR[13] << 17) + ((long) LFSR[10] << 21) + ((long) LFSR[4] << 20) + ((long) LFSR[0] << 8) + LFSR[0]) % 0x7fffffffL);
         int s16 = (int) (((long) v + u) % 0x7fffffffL);
-        if (s16 == 0)
+        if (s16 == 0) {
             s16 = 0x7fffffff;
-        for (int i = 0; i < 15; i++)
-            LFSR[i] = LFSR[i + 1];
+        }
+        System.arraycopy(LFSR, 1, LFSR, 0, 15);
         LFSR[15] = s16;
     }
 
@@ -119,10 +120,10 @@ public class ZUCUtil {
      */
     private void LFSRWithWorkMode() {
         int s16 = (int) ((((long) LFSR[15] << 15) + ((long) LFSR[13] << 17) + ((long) LFSR[10] << 21) + ((long) LFSR[4] << 20) + ((long) LFSR[0] << 8) + LFSR[0]) % 0x7fffffffL);
-        if (s16 == 0)
+        if (s16 == 0) {
             s16 = 0x7fffffff;
-        for (int i = 0; i < 15; i++)
-            LFSR[i] = LFSR[i + 1];
+        }
+        System.arraycopy(LFSR, 1, LFSR, 0, 15);
         LFSR[15] = s16;
     }
 

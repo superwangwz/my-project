@@ -155,7 +155,7 @@ public class ProjectUtils {
         //获取输入流
         FileOutputStream fileOutputStream= new FileOutputStream(new File(path));
 
-        /*//字符串文件内容
+      /*  //字符串文件内容
         String fileContent = new String(bytes);
         //加密类型
         switch (type){

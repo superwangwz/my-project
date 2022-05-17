@@ -78,11 +78,11 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileInfo> implement
 
     @Override
     public void deleteFile(String id) {
-        List<FileInfo> byDataId = getByDataId(id);
-            if (CollUtil.isEmpty(byDataId)){
+        FileInfo fileInfo = getById(id);
+        if (fileInfo == null){
                 return;
             }
-            String fileName = byDataId.get(0).getName();
+            String fileName = fileInfo.getName();
 
             String dirPath = ProjectUtils.getDirPath();
             //文件的下载路径
@@ -92,7 +92,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileInfo> implement
 
             FileUtil.del(file);
 
-            this.remove(new LambdaQueryWrapper<FileInfo>().eq(FileInfo::getDataId,id));
+            this.remove(new LambdaQueryWrapper<FileInfo>().eq(FileInfo::getId,id));
     }
 
     @Override

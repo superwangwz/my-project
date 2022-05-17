@@ -51,4 +51,7 @@ public class FileInfo implements Serializable {
     @ApiModelProperty("创建时间")
     private Date createTime;
 
+    @ApiModelProperty("文件状态")
+    private String status;
+
 }

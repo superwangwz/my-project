@@ -1,30 +1,14 @@
 package com.bishe.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
-import java.security.Security;
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
-
+import cn.hutool.core.io.IoUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.io.IoUtil;
-
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.*;
+import java.security.*;
+import java.util.UUID;
 
 import static cn.hutool.crypto.symmetric.SM4.ALGORITHM_NAME;
 
@@ -58,87 +42,74 @@ public class Sm4Util {
     /**
      * 加密文件
      * @param keyData key
-     * @param sourcePath  待加密的文件路径
-     * @param targetPath  加密的文件路径
      */
-    public static void encryptFile(byte[] keyData,String sourcePath,String targetPath){
+    public static byte[] encryptFile(byte[] keyData,byte[] data){
+        CipherInputStream cipherInputStream = null;
         //加密文件
         try {
             Cipher cipher = generateCipher(Cipher.ENCRYPT_MODE,keyData);
-            CipherInputStream cipherInputStream = new CipherInputStream(new FileInputStream(sourcePath), cipher);
-            FileUtil.writeFromStream(cipherInputStream, targetPath);
-            IoUtil.close(cipherInputStream);
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
+             cipherInputStream = new CipherInputStream(IoUtil.toStream(data), cipher);
+
+        } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | NoSuchProviderException e)  {
             e.printStackTrace();
         }
+        return IoUtil.readBytes(cipherInputStream);
     }
 
 
     /**
      * 解密文件
-     * @param sourcePath 待解密的文件路径
-     * @param targetPath 解密后的文件路径
      */
-    public static void decryptFile(byte[] keyData,String sourcePath, String targetPath) {
+    public static byte[] decryptFile(byte[] keyData,byte[] data) {
         FileInputStream in =null;
         ByteArrayInputStream byteArrayInputStream =null;
         OutputStream out = null;
         CipherOutputStream cipherOutputStream=null;
+        String dirPath = ProjectUtils.getDirPath();
+        FileInputStream fileInputStream = null;
+        byte[] bytes = new byte[1024];
+        String targetPath =  dirPath+"\\"+UUID.randomUUID().toString();
         try {
-            in = new FileInputStream(sourcePath);
-            byte[] bytes = IoUtil.readBytes(in);
-            byteArrayInputStream = IoUtil.toStream(bytes);
+            byteArrayInputStream = IoUtil.toStream(data);
 
             Cipher cipher = generateCipher(Cipher.DECRYPT_MODE,keyData);
 
             out = new FileOutputStream(targetPath);
             cipherOutputStream = new CipherOutputStream(out, cipher);
             IoUtil.copy(byteArrayInputStream, cipherOutputStream);
-        } catch (IOException e) {
+        } catch (IOException | NoSuchProviderException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
             e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (NoSuchProviderException e) {
-            e.printStackTrace();
-        }finally {
+        } finally {
             IoUtil.close(cipherOutputStream);
             IoUtil.close(out);
             IoUtil.close(byteArrayInputStream);
             IoUtil.close(in);
         }
+        try {
+             fileInputStream = new FileInputStream(targetPath);
+             bytes = IoUtil.readBytes(fileInputStream);
+            fileInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
 
     public static void main(String[] args) throws Exception {
+        //原始文件
+        String sp = "C:\\Users\\jcc\\Desktop\\cc.txt";
 
         //生成Key
         byte[] bytes = generateKey(KEY_SIZE);
         String key = ByteUtils.toHexString(bytes);
-
-        //原始文件
-        String sp = "D:\\Git\\test\\my-project\\.file\\3a6281fc-f0b2-4ab8-b217-92a6220a48f2_音乐播放器系统设计.docx";
-        //加密后文件
-        String dp = "D:\\Git\\test\\my-project\\.file\\加密文件.docx";
-        //解密后文件
-        String dp2 = "D:\\Git\\test\\my-project\\.file\\解密文件.docx";
-
         byte[] keyData = ByteUtils.fromHexString(key);
-        //加密文件
-        encryptFile(keyData,sp,dp);
 
+        //加密文件
+        byte[] bytes1 = encryptFile(keyData, IoUtil.readBytes(new FileInputStream(sp)));
+        System.out.println("new String(bytes1) = " + new String(bytes1));
         //解密文件
-        decryptFile(keyData,dp,dp2);
+        byte[] bytes2 = decryptFile(keyData, bytes1);
+        System.out.println("new String(bytes2) = " + new String(bytes2));
     }
 
 }

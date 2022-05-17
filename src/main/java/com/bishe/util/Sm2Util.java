@@ -1,12 +1,15 @@
 package com.bishe.util;
 
 import cn.hutool.core.codec.Base64;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.crypto.SmUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.SM2;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -54,14 +57,37 @@ public class Sm2Util {
         }
         FileUtil.byteToFile(data, out, fileName);
     }
+    /**
+     * 文件加/解密
+     *
+     * @param bytes   数据
+     * @param action   行为（true为加密，false为解密）
+     */
+    public static byte[] encryptionOrDecryption(byte[] bytes,boolean action) {
+        byte[] data;
+        if (action) {
+            data = SM_2.encrypt(bytes, KeyType.PublicKey);
+        } else {
+            data = SM_2.decrypt(bytes, KeyType.PrivateKey);
+        }
+        return data;
+    }
 
     /**
      * 测试方法
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
+        //原始文件
+        String sp = "C:\\Users\\jcc\\Desktop\\cc.txt";
+
+        byte[] bytes = IoUtil.readBytes(new FileInputStream(sp));
+
         // 加密
-        encryptionOrDecryption("D:\\Git\\test\\my-project\\.file\\3a6281fc-f0b2-4ab8-b217-92a6220a48f2_音乐播放器系统设计.docx","D:\\Git\\test\\my-project\\.file","encrypt.docx",true);
+        byte[] bytes1 = encryptionOrDecryption(bytes, true);
+        System.out.println("new String(bytes1) = " + new String(bytes1));
+
         // 解密
-        encryptionOrDecryption("D:\\Git\\test\\my-project\\.file\\encrypt.docx","D:\\Git\\test\\my-project\\.file","decrypt.docx",false);
+        byte[] bytes2 = encryptionOrDecryption(bytes1, false);
+        System.out.println("new String(bytes2) = " + new String(bytes2));
     }
 }

@@ -1,13 +1,7 @@
 package com.bishe.util;
 
-import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.captcha.CaptchaUtil;
-import cn.hutool.captcha.LineCaptcha;
-import cn.hutool.core.date.DateTime;
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.crypto.SmUtil;
-import cn.hutool.crypto.asymmetric.KeyType;
 import com.bishe.config.EcoBootException;
 import com.bishe.pojo.FileInfo;
 import com.bishe.service.IFileService;
@@ -18,7 +12,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.UUID;
 
@@ -155,14 +152,14 @@ public class ProjectUtils {
         //获取输入流
         FileOutputStream fileOutputStream= new FileOutputStream(new File(path));
 
-      /*  //字符串文件内容
+        //字符串文件内容
         String fileContent = new String(bytes);
         //加密类型
         switch (type){
             case "zuc":bytes = ZUCUtil.encrypt(fileContent).getBytes();break;
-            case "sm2":bytes = SmUtil.sm2().encrypt(bytes);break;
-            case "sm4": bytes = Sm4Util.encrypt(bytes);break;
-        }*/
+            case "sm2":bytes = Sm2Util.encryptionOrDecryption(bytes,true);break;
+            //case "sm4": bytes = Sm4Util.encrypt(bytes);break;
+        }
         //写
         fileOutputStream.write(bytes);
         //刷新

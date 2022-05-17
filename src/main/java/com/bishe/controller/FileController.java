@@ -14,8 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * 文件控制器
@@ -44,7 +45,7 @@ public class FileController {
     public Result download(@PathVariable String fileId, HttpServletResponse response){
         FileInfo fileInfo = fileService.getById(fileId);
         if (fileInfo == null){
-             new EcoBootException("文件为空！");
+             throw new EcoBootException("文件为空！");
         }
         File file = ProjectUtils.getFile(fileInfo);
         try {

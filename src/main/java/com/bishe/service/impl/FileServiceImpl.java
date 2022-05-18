@@ -44,7 +44,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, FileInfo> implement
         }
 
         //检查登录
-        ProjectUtils.checkLogin();
+       // ProjectUtils.checkLogin();
 
         if (file==null){
             throw new EcoBootException("文件为空！");

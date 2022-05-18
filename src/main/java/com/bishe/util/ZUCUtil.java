@@ -1,5 +1,11 @@
 package com.bishe.util;
 
+import cn.hutool.core.io.FastByteArrayOutputStream;
+import cn.hutool.core.io.IoUtil;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 /**
  * zuc加密工具
  */
@@ -238,9 +244,13 @@ public class ZUCUtil {
         return inputStr;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
+        //原始文件
+        String sp = "C:\\Users\\zfj\\Desktop\\新建文本文档.txt";
+        byte[] bytes = IoUtil.readBytes(new FileInputStream(sp));
+
         //加密
-        String encrypt = encrypt("123");
+        String encrypt = encrypt(new String(bytes));
         System.out.println("encrypt = " + encrypt);
         //解密
         String encryption = encryption(encrypt);

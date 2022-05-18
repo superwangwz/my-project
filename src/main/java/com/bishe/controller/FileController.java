@@ -42,7 +42,7 @@ public class FileController {
 
     @ApiOperation("下载文件")
     @GetMapping("/download/{fileId}")
-    public Result download(@PathVariable String fileId, HttpServletResponse response){
+    public Result download(@PathVariable String fileId, HttpServletResponse response,String type){
         FileInfo fileInfo = fileService.getById(fileId);
         if (fileInfo == null){
              throw new EcoBootException("文件为空！");
@@ -51,7 +51,7 @@ public class FileController {
         try {
             FileInputStream fileInputStream = new FileInputStream(file);
             //下载文件
-            ProjectUtils.download(response,fileInputStream,file.getName());
+            ProjectUtils.download(response,fileInputStream,file.getName(),type);
         } catch (IOException e) {
             e.printStackTrace();
         }

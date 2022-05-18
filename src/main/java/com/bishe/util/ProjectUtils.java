@@ -2,6 +2,9 @@ package com.bishe.util;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
+import cn.hutool.crypto.SmUtil;
+import cn.hutool.crypto.asymmetric.KeyType;
 import com.bishe.config.EcoBootException;
 import com.bishe.pojo.FileInfo;
 import com.bishe.service.IFileService;
@@ -12,10 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLEncoder;
 import java.util.UUID;
 
@@ -76,20 +76,17 @@ public class ProjectUtils {
      * 下载文件
      * @param response
      */
-    public static  void download(HttpServletResponse response, FileInputStream fileInputStream,String name){
+    public static  void download(HttpServletResponse response, FileInputStream fileInputStream,String name,String type){
         try {
-            //文件大小
-            int available = fileInputStream.available();
-            //初始化缓存
-            byte[] bytes = new byte[available];
+            byte[] bytes = IoUtil.readBytes(fileInputStream);
+            String s = new String(bytes);
             //加密类型
-          /*  switch (type){
-                case "zuc":bytes = ZUCUtil.encryption(new String(bytes)).getBytes();break;
-                case "sm2":bytes = SmUtil.sm2().decrypt(bytes, KeyType.PublicKey);break;
-                case "sm4": bytes = Sm4Util.decrypt(bytes);break;
-            }*/
-            //写入缓存中
-            fileInputStream.read(bytes);
+            switch (type){
+                case "zuc":bytes = ZUCUtil.encryption(s).getBytes();break;
+                case "sm2":bytes = Sm2Util.encryptionOrDecryption(bytes,false);break;
+                case "sm4": bytes = Sm4Util.decryptFile(bytes);break;
+                default:throw new EcoBootException("没有此类型！");
+            }
             //获取文件真实名字
             String fileName = name.split("_")[1];
             //设置传输文件类型 和文件名
@@ -100,9 +97,15 @@ public class ProjectUtils {
             outputStream.write(bytes);
             //关闭流
             outputStream.close();
-            fileInputStream.close();
+
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            try {
+                fileInputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }
@@ -139,11 +142,7 @@ public class ProjectUtils {
         String fileName =  UUID.randomUUID().toString()+"_" + name;
         //获取输出流
         InputStream inputStream = file.getInputStream();
-        int available = inputStream.available();
-        //缓存
-        byte[] bytes = new byte[available];
-        //读
-        inputStream.read(bytes);
+        byte[] bytes = IoUtil.readBytes(inputStream);
         //获取存放文件的目录路径
         String filePath = getDirPath();
         //生成一个不重名的地址
@@ -158,7 +157,8 @@ public class ProjectUtils {
         switch (type){
             case "zuc":bytes = ZUCUtil.encrypt(fileContent).getBytes();break;
             case "sm2":bytes = Sm2Util.encryptionOrDecryption(bytes,true);break;
-            //case "sm4": bytes = Sm4Util.encrypt(bytes);break;
+            case "sm4": bytes = Sm4Util.encryptFile(bytes);break;
+            default:throw new EcoBootException("没有此类型！");
         }
         //写
         fileOutputStream.write(bytes);

@@ -27,7 +27,6 @@ public class FileInfo implements Serializable {
     @ApiModelProperty("主键")
     private String id;
 
-
     @ApiModelProperty("业务id")
     private String dataId;
 
@@ -37,21 +36,15 @@ public class FileInfo implements Serializable {
     @ApiModelProperty("文件名")
     private String name;
 
-
     @ApiModelProperty("文件后缀")
     private String suffix;
 
-
     @ApiModelProperty("创建人")
     private String createBy;
-
 
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty("创建时间")
     private Date createTime;
-
-    @ApiModelProperty("文件状态")
-    private String status;
 
 }

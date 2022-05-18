@@ -1,5 +1,6 @@
 package com.bishe.util;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
@@ -15,6 +16,23 @@ import static cn.hutool.crypto.symmetric.SM4.ALGORITHM_NAME;
 public class Sm4Util {
 
     public static final int KEY_SIZE = 128;
+
+    public static byte[] keyData = new byte[0];
+
+    public static void init(){
+        if (keyData.length != 0){
+            return;
+        }
+        //生成Key
+        byte[] bytes = new byte[0];
+        try {
+            bytes = generateKey(KEY_SIZE);
+            String key = ByteUtils.toHexString(bytes);
+            keyData = ByteUtils.fromHexString(key);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public static byte[] generateKey(int keySize) throws Exception {
         KeyGenerator kg = KeyGenerator.getInstance(ALGORITHM_NAME, BouncyCastleProvider.PROVIDER_NAME);
@@ -41,9 +59,9 @@ public class Sm4Util {
 
     /**
      * 加密文件
-     * @param keyData key
      */
-    public static byte[] encryptFile(byte[] keyData,byte[] data){
+    public static byte[] encryptFile(byte[] data){
+        init();
         CipherInputStream cipherInputStream = null;
         //加密文件
         try {
@@ -60,8 +78,8 @@ public class Sm4Util {
     /**
      * 解密文件
      */
-    public static byte[] decryptFile(byte[] keyData,byte[] data) {
-        FileInputStream in =null;
+    public static byte[] decryptFile(byte[] data) {
+        init();
         ByteArrayInputStream byteArrayInputStream =null;
         OutputStream out = null;
         CipherOutputStream cipherOutputStream=null;
@@ -83,12 +101,12 @@ public class Sm4Util {
             IoUtil.close(cipherOutputStream);
             IoUtil.close(out);
             IoUtil.close(byteArrayInputStream);
-            IoUtil.close(in);
         }
         try {
              fileInputStream = new FileInputStream(targetPath);
              bytes = IoUtil.readBytes(fileInputStream);
             fileInputStream.close();
+            FileUtil.del(targetPath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -97,18 +115,13 @@ public class Sm4Util {
 
     public static void main(String[] args) throws Exception {
         //原始文件
-        String sp = "C:\\Users\\jcc\\Desktop\\cc.txt";
-
-        //生成Key
-        byte[] bytes = generateKey(KEY_SIZE);
-        String key = ByteUtils.toHexString(bytes);
-        byte[] keyData = ByteUtils.fromHexString(key);
+        String sp = "C:\\Users\\zfj\\Desktop\\新建文本文档.txt";
 
         //加密文件
-        byte[] bytes1 = encryptFile(keyData, IoUtil.readBytes(new FileInputStream(sp)));
+        byte[] bytes1 = encryptFile(IoUtil.readBytes(new FileInputStream(sp)));
         System.out.println("new String(bytes1) = " + new String(bytes1));
         //解密文件
-        byte[] bytes2 = decryptFile(keyData, bytes1);
+        byte[] bytes2 = decryptFile(bytes1);
         System.out.println("new String(bytes2) = " + new String(bytes2));
     }
 

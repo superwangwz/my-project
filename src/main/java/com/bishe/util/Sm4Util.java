@@ -15,18 +15,18 @@ import static cn.hutool.crypto.symmetric.SM4.ALGORITHM_NAME;
 
 public class Sm4Util {
 
-    public static final int KEY_SIZE = 128;
+    private static final int KEY_SIZE = 128;
 
-    public static byte[] keyData = new byte[0];
+    private static byte[] keyData = new byte[0];
 
-    public static void init(){
+    private static void init(){
         if (keyData.length != 0){
             return;
         }
         //生成Key
         byte[] bytes = new byte[0];
         try {
-            bytes = generateKey(KEY_SIZE);
+            bytes = generateKey();
             String key = ByteUtils.toHexString(bytes);
             keyData = ByteUtils.fromHexString(key);
         } catch (Exception e) {
@@ -34,9 +34,9 @@ public class Sm4Util {
         }
     }
 
-    public static byte[] generateKey(int keySize) throws Exception {
+    private static byte[] generateKey() throws Exception {
         KeyGenerator kg = KeyGenerator.getInstance(ALGORITHM_NAME, BouncyCastleProvider.PROVIDER_NAME);
-        kg.init(keySize, new SecureRandom());
+        kg.init(Sm4Util.KEY_SIZE, new SecureRandom());
         return kg.generateKey().getEncoded();
     }
 
@@ -49,7 +49,7 @@ public class Sm4Util {
     }
 
     //生成 Cipher
-    public static Cipher generateCipher(int mode,byte[] keyData) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException {
+    private static Cipher generateCipher(int mode, byte[] keyData) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException {
         Cipher cipher = Cipher.getInstance("SM4/ECB/PKCS5Padding", BouncyCastleProvider.PROVIDER_NAME);
         Key sm4Key = new SecretKeySpec(keyData, "SM4");
         cipher.init(mode, sm4Key);
@@ -60,7 +60,7 @@ public class Sm4Util {
     /**
      * 加密文件
      */
-    public static byte[] encryptFile(byte[] data){
+    static byte[] encryptFile(byte[] data){
         init();
         CipherInputStream cipherInputStream = null;
         //加密文件
@@ -78,7 +78,7 @@ public class Sm4Util {
     /**
      * 解密文件
      */
-    public static byte[] decryptFile(byte[] data) {
+    static byte[] decryptFile(byte[] data) {
         init();
         ByteArrayInputStream byteArrayInputStream =null;
         OutputStream out = null;
